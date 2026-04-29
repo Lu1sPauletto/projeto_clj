@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="CLJ Management — Sistema de Gestão do Secretariado Diocesano. Gerencie jovens, materiais e cronogramas de visitas." />
+  <title>CLJ Management · Secretariado Diocesano</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Preconnect para Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════
+     SIDEBAR OVERLAY (mobile)
+════════════════════════════════════════════ -->
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════
+     TOAST CONTAINER
+════════════════════════════════════════════ -->
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <div class="app-shell">
+
+    <!-- ══════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════ -->
+    <aside id="sidebar" class="sidebar" role="navigation" aria-label="Menu principal">
+
+      <div class="sidebar-brand">
+        <div class="brand-icon" aria-hidden="true">✝</div>
+        <div class="brand-text">
+          <div class="brand-title">CLJ Management</div>
+          <div class="brand-sub">Secretariado Diocesano</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">Principal</span>
+
+        <button class="nav-btn" data-page="dashboard" id="nav-dashboard" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">🏠</span>
+          Dashboard
+        </button>
+
+        <span class="nav-section-label">Módulos</span>
+
+        <button class="nav-btn" data-page="jovens" id="nav-jovens">
+          <span class="nav-icon" aria-hidden="true">👥</span>
+          Jovens &amp; Retiros
+          <span class="nav-badge" id="badge-jovens" style="display:none">0</span>
+        </button>
+
+        <button class="nav-btn" data-page="materiais" id="nav-materiais">
+          <span class="nav-icon" aria-hidden="true">📦</span>
+          Materiais
+          <span class="nav-badge" id="badge-materiais" style="display:none">0</span>
+        </button>
+
+        <button class="nav-btn" data-page="visitas" id="nav-visitas">
+          <span class="nav-icon" aria-hidden="true">📅</span>
+          Cronograma
+          <span class="nav-badge" id="badge-visitas" style="display:none">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        CLJ Management v1.0<br>
+      </div>
+    </aside>
+
+    <!-- ══════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════ -->
+    <div class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar" role="banner">
+        <button class="topbar-menu-btn" id="menu-btn" aria-label="Abrir menu" aria-controls="sidebar">
+          ☰
+        </button>
+
+        <div class="topbar-breadcrumb" aria-label="Localização atual">
+          <span class="crumb-root">CLJ</span>
+          <span class="crumb-sep">›</span>
+          <span class="crumb-current" id="breadcrumb-current">Dashboard</span>
+        </div>
+
+        <div class="topbar-right">
+          <span class="topbar-date" id="topbar-date" aria-label="Data atual"></span>
+          <div class="topbar-avatar" title="Secretariado Diocesano" aria-label="Usuário">S</div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <main class="page-content">
+
+        <!-- ══════════════════════════════════
+           PÁGINA: DASHBOARD
+      ═══════════════════════════════════ -->
+        <section id="dashboard" class="page" role="main" aria-label="Dashboard">
+          <div class="page-header">
+            <div class="page-header-text">
+              <h1>Dashboard</h1>
+              <p>Visão geral do Secretariado Diocesano — CLJ</p>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="stats-grid" role="list" aria-label="Resumo geral">
+            <div class="stat-card" role="listitem">
+              <span class="stat-icon" aria-hidden="true">👥</span>
+              <div class="stat-value" id="stat-jovens">0</div>
+              <div class="stat-label">Jovens Cadastrados</div>
+            </div>
+            <div class="stat-card" role="listitem">
+              <span class="stat-icon" aria-hidden="true">📦</span>
+              <div class="stat-value" id="stat-materiais">0</div>
+              <div class="stat-label">Itens no Inventário</div>
+            </div>
+            <div class="stat-card" role="listitem">
+              <span class="stat-icon" aria-hidden="true">📅</span>
+              <div class="stat-value" id="stat-visitas">0</div>
+              <div class="stat-label">Visitas Registradas</div>
+            </div>
+            <div class="stat-card" role="listitem">
+              <span class="stat-icon" aria-hidden="true">⏳</span>
+              <div class="stat-value" id="stat-pendentes">0</div>
+              <div class="stat-label">Visitas Pendentes</div>
+            </div>
+          </div>
+
+          <!-- Dashboard grid -->
+          <div class="dashboard-grid">
+            <!-- Atividade recente -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon" aria-hidden="true">🕐</div>
+                <div class="card-header-text">
+                  <h3>Atividade Recente</h3>
+                  <p>Últimas ações registradas no sistema</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="activity-list" role="log" aria-label="Atividade recente"></div>
+              </div>
+            </div>
+
+            <!-- Alertas -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-header-icon" aria-hidden="true">🔔</div>
+                <div class="card-header-text">
+                  <h3>Alertas &amp; Destaques</h3>
+                  <p>Itens que precisam de atenção</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="summary-list" aria-label="Alertas do sistema"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════
+           PÁGINA: JOVENS & RETIROS
+      ═══════════════════════════════════ -->
+        <section id="jovens" class="page" aria-label="Módulo Jovens e Retiros">
+          <div class="page-header">
+            <div class="page-header-text">
+              <h1>Jovens &amp; Retiros</h1>
+              <p>Cadastre e gerencie os jovens participantes do CLJ</p>
+            </div>
+          </div>
+
+          <!-- Formulário de cadastro -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">➕</div>
+              <div class="card-header-text">
+                <h3>Cadastrar Novo Jovem</h3>
+                <p>Preencha os dados do participante</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="form-jovem" novalidate aria-label="Formulário de cadastro de jovem">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="j-nome">Nome Completo <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="text" id="j-nome" name="nome" placeholder="Ex: Maria de Nazaré Santos"
+                      autocomplete="name" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="j-paroquia">Paróquia de Origem <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="text" id="j-paroquia" name="paroquia" placeholder="Ex: Paróquia São Francisco"
+                      required />
+                  </div>
+                  <div class="form-group">
+                    <label for="j-contato">Contato (WhatsApp)</label>
+                    <input type="tel" id="j-contato" name="contato" placeholder="(48) 99999-0000" autocomplete="tel" />
+                  </div>
+                  <div class="form-group full">
+                    <label for="j-obs">Observações de Saúde / Alergias</label>
+                    <textarea id="j-obs" name="obs" placeholder="Ex: Alergia a amendoim, diabético(a)..."></textarea>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="btn-cadastrar-jovem">
+                    <span aria-hidden="true">✔</span> Cadastrar Jovem
+                  </button>
+                  <button type="reset" class="btn btn-secondary">
+                    <span aria-hidden="true">↺</span> Limpar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Lista de jovens -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">👥</div>
+              <div class="card-header-text">
+                <h3>Jovens Cadastrados</h3>
+                <p>Lista completa de participantes</p>
+              </div>
+              <div class="search-bar" style="margin-left:auto">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="text" id="j-search" placeholder="Buscar por nome ou paróquia…"
+                  aria-label="Buscar jovens" />
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="data-table" aria-label="Lista de jovens cadastrados">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nome</th>
+                      <th scope="col">Paróquia</th>
+                      <th scope="col">Contato</th>
+                      <th scope="col">Obs. Saúde</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="jovens-tbody">
+                    <!-- Preenchido por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════
+           PÁGINA: MATERIAIS E LOGÍSTICA
+      ═══════════════════════════════════ -->
+        <section id="materiais" class="page" aria-label="Módulo Materiais e Logística">
+          <div class="page-header">
+            <div class="page-header-text">
+              <h1>Materiais &amp; Logística</h1>
+              <p>Controle o inventário de itens do Secretariado</p>
+            </div>
+          </div>
+
+          <!-- Formulário -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">➕</div>
+              <div class="card-header-text">
+                <h3>Registrar Novo Item</h3>
+                <p>Adicione itens ao inventário do CLJ</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="form-material" novalidate aria-label="Formulário de cadastro de material">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="m-nome">Nome do Item <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="text" id="m-nome" name="nome" placeholder="Ex: Bíblias Sagradas" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="m-qtd">Quantidade Total <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="number" id="m-qtd" name="quantidade" placeholder="Ex: 30" min="0" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="m-responsavel">Com quem está (Responsável)</label>
+                    <input type="text" id="m-responsavel" name="responsavel" placeholder="Ex: Diácono João Batista" />
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="btn-cadastrar-material">
+                    <span aria-hidden="true">✔</span> Registrar Item
+                  </button>
+                  <button type="reset" class="btn btn-secondary">
+                    <span aria-hidden="true">↺</span> Limpar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Lista de materiais -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">📦</div>
+              <div class="card-header-text">
+                <h3>Inventário de Materiais</h3>
+                <p>Todos os itens registrados</p>
+              </div>
+              <div class="search-bar" style="margin-left:auto">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input type="text" id="m-search" placeholder="Buscar por item ou responsável…"
+                  aria-label="Buscar materiais" />
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="data-table" aria-label="Inventário de materiais">
+                  <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Quantidade</th>
+                      <th scope="col">Responsável</th>
+                      <th scope="col">Atualizar</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="materiais-tbody">
+                    <!-- Preenchido por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════
+           PÁGINA: CRONOGRAMA DE VISITAS
+      ═══════════════════════════════════ -->
+        <section id="visitas" class="page" aria-label="Módulo Cronograma de Visitas">
+          <div class="page-header">
+            <div class="page-header-text">
+              <h1>Cronograma de Visitas</h1>
+              <p>Agende e acompanhe visitas às paróquias</p>
+            </div>
+          </div>
+
+          <!-- Formulário -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">➕</div>
+              <div class="card-header-text">
+                <h3>Agendar Nova Visita</h3>
+                <p>Registre uma visita pastoral às paróquias</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="form-visita" novalidate aria-label="Formulário de agendamento de visita">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="v-paroquia">Nome da Paróquia <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="text" id="v-paroquia" name="paroquia"
+                      placeholder="Ex: Paróquia Nossa Senhora Aparecida" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="v-data">Data da Visita <span aria-hidden="true"
+                        style="color:var(--danger)">*</span></label>
+                    <input type="date" id="v-data" name="data" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="v-status">Status</label>
+                    <select id="v-status" name="status">
+                      <option value="Pendente">⏳ Pendente</option>
+                      <option value="Concluída">✅ Concluída</option>
+                    </select>
+                  </div>
+                  <div class="form-group full">
+                    <label for="v-obs">Observações</label>
+                    <textarea id="v-obs" name="obs"
+                      placeholder="Ex: Visita de apresentação do projeto CLJ, reunião com o pároco…"></textarea>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary" id="btn-agendar-visita">
+                    <span aria-hidden="true">📅</span> Agendar Visita
+                  </button>
+                  <button type="reset" class="btn btn-secondary">
+                    <span aria-hidden="true">↺</span> Limpar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Lista de visitas -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-icon" aria-hidden="true">📅</div>
+              <div class="card-header-text">
+                <h3>Visitas Registradas</h3>
+                <p>Ordenadas por data</p>
+              </div>
+              <div class="status-toggle" style="margin-left:auto" role="group" aria-label="Filtrar por status">
+                <button id="filter-all" class="active" aria-pressed="true">Todas</button>
+                <button id="filter-pendente" aria-pressed="false">Pendentes</button>
+                <button id="filter-concluida" aria-pressed="false">Concluídas</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-wrap">
+                <table class="data-table" aria-label="Lista de visitas registradas">
+                  <thead>
+                    <tr>
+                      <th scope="col">Paróquia</th>
+                      <th scope="col">Data</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Observações</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="visitas-tbody">
+                    <!-- Preenchido por JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main><!-- /page-content -->
+    </div><!-- /main-content -->
+  </div><!-- /app-shell -->
+
+  <script src="app.js"></script>
+</body>
+
+</html>
